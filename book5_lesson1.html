@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+<meta charset="UTF-8">
+<title>学中文小课堂 🎵</title>
+
+<style>
+body {
+    font-family: "Microsoft YaHei", Arial;
+    background-color: #fffbec;
+    text-align: center;
+    padding: 50px;
+}
+
+h1 {
+    color: #ff6f61;
+}
+
+.word {
+    display: inline-block;
+    margin: 20px;
+    padding: 20px;
+    border: 3px solid #ffcc00;
+    border-radius: 10px;
+    background-color: #fff9d8;
+    cursor: pointer;
+    width: 150px;
+}
+
+.chinese {
+    font-size: 40px;
+    color: #ff6f61;
+}
+
+.pinyin {
+    color: #2a7ae2;
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+.meaning {
+    color: #27ae60;
+    font-size: 18px;
+    margin-top: 10px;
+    display: none;
+}
+.big-button {
+    display: inline-block;
+    font-size: 26px;
+    padding: 18px 35px;
+    background-color: #ff6f61;
+    color: white;
+    text-decoration: none;
+    border-radius: 15px;
+    margin-top: 30px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>学中文小课堂 🎵</h1>
+
+<div class="word" onclick="speak(this)">
+    <div class="chinese">猫</div>
+    <div class="pinyin">māo</div>
+</div>
+
+<div class="word" onclick="speak(this)">
+    <div class="chinese">狗</div>
+    <div class="pinyin">gǒu</div>
+</div>
+
+<div class="word" onclick="speak(this)">
+    <div class="chinese">苹果</div>
+    <div class="pinyin">píngguǒ</div>
+</div>
+<br><br>
+<a href="game.html">🎮 去玩小游戏</a>
+<script>
+function speak(el) {
+    const text = el.querySelector(".chinese").innerText;
+
+    // 中文发音
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "zh-CN";
+
+    speechSynthesis.speak(utterance);
+
+    // 显示/隐藏意思
+    const meaning = el.querySelector(".meaning");
+    meaning.style.display = (meaning.style.display === "block") ? "none" : "block";
+}
+</script>
+
+</body>
+
+</html>
