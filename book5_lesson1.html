@@ -142,15 +142,19 @@ h1 {
 <a href="book5_quiz1.html">🏆 去闯关</a>
 <script>
 function speak(el) {
-    // 获取拼音
-    let pinyin = el.querySelector('.pinyin').innerText.trim();
+    let word = el.querySelector('.chinese').innerText.trim();
 
-    // 取消上一个朗读
+    // ⭐ 多音字修正
+    let text = word;
+
+    if (word === "行") text = "银行的行";
+    if (word === "漂") text = "漂亮的漂";
+
     speechSynthesis.cancel();
 
-    // 播放拼音
-    const utterance = new SpeechSynthesisUtterance(pinyin);
+    const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "zh-CN";
+
     speechSynthesis.speak(utterance);
 }
 </script>
