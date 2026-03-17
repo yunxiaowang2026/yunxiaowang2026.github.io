@@ -155,7 +155,7 @@ function speak(el) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "zh-CN";
     // 调慢语速
-    utterance.rate = 0.7;  // 0.5 ~ 2.0 之间都可以尝试
+    utterance.rate = 0.6;  // 0.5 ~ 2.0 之间都可以尝试
 
     speechSynthesis.speak(utterance);
 }
