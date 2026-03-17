@@ -104,6 +104,10 @@ let timer = null;
 let speaking = false;
 let correctCount = 0;
 let totalCount = 0;
+    
+speechSynthesis.onvoiceschanged = () => {
+    console.log("语音加载完成");
+};
 
 // 解锁语音（关键）
 document.body.addEventListener('click', function unlockAudio() {
@@ -149,18 +153,25 @@ function playSound(text) {
     clearTimeout(timer);
     speechSynthesis.cancel();
 
-    // ⭐ 找当前题
-    let speakText = currentQ.sound ? currentQ.sound : text;
+    // ⭐ 获取所有语音
+    let voices = speechSynthesis.getVoices();
 
-    const utterance = new SpeechSynthesisUtterance(speakText);
+    // ⭐ 找中文语音（关键！！！）
+    let zhVoice = voices.find(v => v.lang === "zh-CN") 
+                || voices.find(v => v.lang.includes("zh"));
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    if (zhVoice) {
+        utterance.voice = zhVoice;
+    }
+
     utterance.lang = "zh-CN";
 
     speaking = true;
     utterance.onend = () => speaking = false;
 
-    setTimeout(() => {
-        speechSynthesis.speak(utterance);
-    }, 100);
+    speechSynthesis.speak(utterance);
 }
 
 // 判断
