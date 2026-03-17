@@ -63,37 +63,13 @@ h1 {
 
 <h1>学中文小课堂 🎵</h1>
 
-<div class="word" onclick="speak(this)">
-    <div class="chinese">猫</div>
-    <div class="pinyin">māo</div>
-</div>
+<a href="book1.html" class="big-button">📘 <<中文>>第一册</a>
+<a href="book2.html" class="big-button">📗 <<中文>>第二册</a>
+<a href="book3.html" class="big-button">📙 <<中文>>第三册</a>
+<a href="book1.html" class="big-button">📘 <<中文>>第四册</a>
+<a href="book2.html" class="big-button">📗 <<中文>>第五册</a>
+<a href="book3.html" class="big-button">📙 <<中文>>第六册</a>
 
-<div class="word" onclick="speak(this)">
-    <div class="chinese">狗</div>
-    <div class="pinyin">gǒu</div>
-</div>
-
-<div class="word" onclick="speak(this)">
-    <div class="chinese">苹果</div>
-    <div class="pinyin">píngguǒ</div>
-</div>
-<br><br>
-<a href="game.html">🎮 去玩小游戏</a>
-<script>
-function speak(el) {
-    const text = el.querySelector(".chinese").innerText;
-
-    // 中文发音
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "zh-CN";
-
-    speechSynthesis.speak(utterance);
-
-    // 显示/隐藏意思
-    const meaning = el.querySelector(".meaning");
-    meaning.style.display = (meaning.style.display === "block") ? "none" : "block";
-}
-</script>
 
 </body>
 
