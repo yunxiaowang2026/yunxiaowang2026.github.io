@@ -82,10 +82,10 @@ let levels = [
 {
     questions: [
         {word:"许", choices:["许","同","准"], answer:"许"},
-        {word:"漂", choices:["漂","浮","亮"], answer:"漂"},
         {word:"尺", choices:["尺","米","寸"], answer:"尺"},
         {word:"支", choices:["支","枝","笔"], answer:"支"},
-        {word:"行", choices:["行","走","旅"], answer:"行"},
+        {word:"行", choices:["行","商","超"], answer:"行", sound:"xíng"},
+        {word:"漂", choices:["漂","颜","行"], answer:"漂", sound:"piào"},
     ]
 }，
         {word:"商", choices:["商","店","买"], answer:"商"},
@@ -149,11 +149,13 @@ function playSound(text) {
     clearTimeout(timer);
     speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
+    // ⭐ 找当前题
+    let speakText = currentQ.sound ? currentQ.sound : text;
+
+    const utterance = new SpeechSynthesisUtterance(speakText);
     utterance.lang = "zh-CN";
 
     speaking = true;
-
     utterance.onend = () => speaking = false;
 
     setTimeout(() => {
