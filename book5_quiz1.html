@@ -121,6 +121,7 @@ function playSound(text) {
 }
 
 // 检查答案
+
 function checkAnswer(choice) {
     const q = levels[currentLevel].questions[currentQuestion];
     choice = choice.trim();
@@ -129,12 +130,19 @@ function checkAnswer(choice) {
     if(choice === answer){
         document.getElementById("result").innerText = "✅ 正确！";
         score++;
+
         if(!doneWords.includes(q.word)){
             doneWords.push(q.word);
         }
+
+        // ✅ 只有答对才进入下一题
+        currentQuestion++;
+
     } else {
         document.getElementById("result").innerText = "❌ 错误，再试试！";
+        return; // ❗关键：错误时不往下走
     }
+   
 
     // 下一题
     currentQuestion++;
@@ -165,7 +173,11 @@ function checkAnswer(choice) {
 }
 
 // 初始化
-showQuestion();
+showQuestion{
+    const qList = levels[currentLevel].questions;
+    currentQuestion = Math.floor(Math.random() * qList.length);
+    const q = qList[currentQuestion];
+};
 </script>
 
 </body>
