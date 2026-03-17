@@ -88,30 +88,27 @@ let levels = [
 ];
 
 let currentLevel = 0;
-let currentQuestion = 0;
+let currentQ = null;
 let score = 0;
 let doneWords = []; // 本关已答对的字
 
 // 显示题目
 function showQuestion() {
     const qList = levels[currentLevel].questions;
-    currentQuestion = Math.floor(Math.random() * qList.length);
-    const q = qList[currentQuestion];
+    currentQ = qList[Math.floor(Math.random() * qList.length)];
 
     speechSynthesis.cancel();
-    // 问题区只显示发音按钮
+
     document.getElementById("question").innerHTML = `
-        <button class="button" onclick="playSound('${q.word}')">🔊 发音</button>
+        <button class="button" onclick="playSound('${currentQ.word}')">🔊 发音</button>
     `;
 
-    // 答案按钮
     let optionsHTML = "";
-    q.choices.forEach(choice => {
+    currentQ.choices.forEach(choice => {
         optionsHTML += `<button class="button" onclick="checkAnswer('${choice}')">${choice}</button>`;
     });
-    document.getElementById("options").innerHTML = optionsHTML;
 
-    // 清空结果
+    document.getElementById("options").innerHTML = optionsHTML;
     document.getElementById("result").innerText = "";
     document.getElementById("score").innerText = "分数: " + score;
 }
@@ -127,54 +124,44 @@ function playSound(text) {
 // 检查答案
 
 function checkAnswer(choice) {
-    const q = levels[currentLevel].questions[currentQuestion];
     choice = choice.trim();
-    let answer = q.answer.trim();
+    let answer = currentQ.answer.trim();
 
     if(choice === answer){
         document.getElementById("result").innerText = "✅ 正确！";
         score++;
 
-        if(!doneWords.includes(q.word)){
-            doneWords.push(q.word);
+        if(!doneWords.includes(currentQ.word)){
+            doneWords.push(currentQ.word);
         }
-
-        // ✅ 只有答对才进入下一题
-        currentQuestion++;
 
     } else {
         document.getElementById("result").innerText = "❌ 错误，再试试！";
-        return; // ❗关键：错误时不往下走
+        return;
     }
-   
 
-    // 下一题
-    currentQuestion++;
-    if(currentQuestion >= levels[currentLevel].questions.length){
-        currentQuestion = 0;
+    // 检查是否完成本关
+    if(doneWords.length === levels[currentLevel].questions.length){
+        document.getElementById("result").innerText = `🎉 本关完成！当前分数: ${score}`;
+        setTimeout(()=>{
+            doneWords = [];
+            currentLevel++;
 
-        // 检查是否完成本关
-        if(doneWords.length === levels[currentLevel].questions.length){
-            document.getElementById("result").innerText = `🎉 本关完成！当前分数: ${score}`;
-            setTimeout(()=>{
-                doneWords = [];
-                currentLevel++;
-                currentQuestion = 0;
-                if(currentLevel < levels.length){
-                    showQuestion();
-                } else {
-                    document.getElementById("result").innerText = `🏆 游戏结束！总分: ${score}`;
-                    document.getElementById("again").innerText = "🏆 再玩儿一次！";
-                    document.getElementById("options").innerHTML="";
-                    document.getElementById("question").innerHTML="";
-                }
-            }, 2000);
-            return;
-        }
+            if(currentLevel < levels.length){
+                showQuestion();
+            } else {
+                document.getElementById("result").innerText = `🏆 游戏结束！总分: ${score}`;
+                document.getElementById("again").innerText = "🏆 再玩儿一次！";
+                document.getElementById("options").innerHTML="";
+                document.getElementById("question").innerHTML="";
+            }
+        }, 2000);
+        return;
     }
 
     setTimeout(()=>{ showQuestion(); }, 1000);
 }
+
 
 // 初始化
 showQuestion();
