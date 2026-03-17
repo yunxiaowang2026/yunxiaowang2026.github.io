@@ -10,13 +10,9 @@ body {
     padding: 40px;
     background-color: #fffbe6;
 }
+h1 { color: #ff6f61; margin-bottom: 20px; }
 
-h1 {
-    color: #ff6f61;
-    margin-bottom: 20px;
-}
-
-/* 顶部导航按钮 */
+/* 顶部导航 */
 .icon-button {
     display: inline-block;
     font-size: 36px;
@@ -27,9 +23,7 @@ h1 {
     text-decoration: none;
     border-radius: 15px;
 }
-.icon-button:hover {
-    background-color: #ffb347;
-}
+.icon-button:hover { background-color: #ffb347; }
 
 /* 答案按钮 */
 .button {
@@ -42,22 +36,12 @@ h1 {
     background-color: #ffcc00;
     color: black;
 }
-.button:hover {
-    background-color: #ffb347;
-}
+.button:hover { background-color: #ffb347; }
 
 /* 结果提示 */
-#result {
-    font-size: 28px;
-    margin-top: 20px;
-    height: 40px;
-}
-
+#result { font-size: 28px; margin-top: 20px; height: 40px; }
 /* 分数显示 */
-#score {
-    font-size: 24px;
-    margin-top: 10px;
-}
+#score { font-size: 24px; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -66,8 +50,8 @@ h1 {
 
 <!-- 顶部导航 -->
 <div style="margin-bottom: 30px;">
-    <a href="book1_lesson1_study.html" class="icon-button">📚 学习</a>
-    <a href="quiz.html" class="icon-button">🕹️ 闯关</a>
+    <a href="book5_lesson5.html" class="icon-button">📚 去学习</a>
+    <a href="book5_game5.html" class="icon-button">🕹️ 去玩儿小游戏</a>
 </div>
 
 <!-- 问题区（只显示发音按钮） -->
@@ -104,8 +88,9 @@ let levels = [
 let currentLevel = 0;
 let currentQuestion = 0;
 let score = 0;
+let doneWords = []; // 本关已答对的字
 
-// 显示问题
+// 显示题目
 function showQuestion() {
     const q = levels[currentLevel].questions[currentQuestion];
     
@@ -114,19 +99,19 @@ function showQuestion() {
         <button class="button" onclick="playSound('${q.word}')">🔊 发音</button>
     `;
 
-    // 显示答案按钮
+    // 答案按钮
     let optionsHTML = "";
     q.choices.forEach(choice => {
         optionsHTML += `<button class="button" onclick="checkAnswer('${choice}')">${choice}</button>`;
     });
     document.getElementById("options").innerHTML = optionsHTML;
 
-    // 清空结果显示
+    // 清空结果
     document.getElementById("result").innerText = "";
     document.getElementById("score").innerText = "分数: " + score;
 }
 
-// 发音功能
+// 发音
 function playSound(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "zh-CN";
@@ -142,27 +127,38 @@ function checkAnswer(choice) {
     if(choice === answer){
         document.getElementById("result").innerText = "✅ 正确！";
         score++;
+        if(!doneWords.includes(q.word)){
+            doneWords.push(q.word);
+        }
     } else {
         document.getElementById("result").innerText = "❌ 错误，再试试！";
     }
 
+    // 下一题
     currentQuestion++;
+    if(currentQuestion >= levels[currentLevel].questions.length){
+        currentQuestion = 0;
 
-    if(currentQuestion < levels[currentLevel].questions.length){
-        setTimeout(()=>{ showQuestion(); }, 1000);
-    } else {
-        // 本关结束
-        if(currentLevel + 1 < levels.length){
-            currentLevel++;
-            currentQuestion = 0;
+        // 检查是否完成本关
+        if(doneWords.length === levels[currentLevel].questions.length){
             document.getElementById("result").innerText = `🎉 本关完成！当前分数: ${score}`;
-            setTimeout(()=>{ showQuestion(); }, 2000);
-        } else {
-            document.getElementById("result").innerText = `🏆 游戏结束！总分: ${score}`;
-            document.getElementById("options").innerHTML = "";
-            document.getElementById("question").innerHTML = "";
+            setTimeout(()=>{
+                doneWords = [];
+                currentLevel++;
+                currentQuestion = 0;
+                if(currentLevel < levels.length){
+                    showQuestion();
+                } else {
+                    document.getElementById("result").innerText = `🏆 游戏结束！总分: ${score}`;
+                    document.getElementById("options").innerHTML="";
+                    document.getElementById("question").innerHTML="";
+                }
+            }, 2000);
+            return;
         }
     }
+
+    setTimeout(()=>{ showQuestion(); }, 1000);
 }
 
 // 初始化
