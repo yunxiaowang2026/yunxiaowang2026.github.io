@@ -97,7 +97,8 @@ function showQuestion() {
     const qList = levels[currentLevel].questions;
     currentQuestion = Math.floor(Math.random() * qList.length);
     const q = qList[currentQuestion];
-    
+
+    speechSynthesis.cancel();
     // 问题区只显示发音按钮
     document.getElementById("question").innerHTML = `
         <button class="button" onclick="playSound('${q.word}')">🔊 发音</button>
@@ -119,6 +120,7 @@ function showQuestion() {
 function playSound(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "zh-CN";
+    speechSynthesis.cancel();
     speechSynthesis.speak(utterance);
 }
 
