@@ -91,6 +91,13 @@ let currentLevel = 0;
 let currentQ = null;
 let score = 0;
 let doneWords = []; // 本关已答对的字
+document.body.addEventListener('click', function unlockAudio() {
+    const u = new SpeechSynthesisUtterance('');
+    speechSynthesis.speak(u);
+    speechSynthesis.cancel();
+
+    document.body.removeEventListener('click', unlockAudio);
+});
 
 // 显示题目
 function showQuestion() {
@@ -115,12 +122,14 @@ function showQuestion() {
 
 // 发音
 function playSound(text) {
+    speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "zh-CN";
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utterance);
-}
 
+    setTimeout(() => {
+        speechSynthesis.speak(utterance);
+    }, 50);
+    
 // 检查答案
 
 function checkAnswer(choice) {
