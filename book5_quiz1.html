@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+<meta charset="UTF-8">
+<title>中文闯关测验 🎮</title>
+<style>
+body { font-family: "Microsoft YaHei", Arial; text-align:center; padding:40px; background-color:#fffbe6;}
+h1 {color:#ff6f61;}
+.button {display:inline-block; font-size:24px; padding:15px 30px; margin:15px; cursor:pointer; border-radius:12px; background-color:#ffcc00;}
+#result {font-size:24px; margin-top:20px; color:#27ae60;}
+</style>
+</head>
+
+<body>
+
+<h1>中文闯关测验 🎮</h1>
+
+<div id="question"></div>
+<div id="options"></div>
+<div id="result"></div>
+<div id="score"></div>
+
+<script>
+let levels = [
+    { // 第一关
+        questions: [
+            {word:"猫", choices:["猫","狗","苹果"], answer:"猫"},
+            {word:"狗", choices:["猫","狗","苹果"], answer:"狗"},
+            {word:"苹果", choices:["猫","狗","苹果"], answer:"苹果"}
+        ]
+    },
+    { // 第二关
+        questions: [
+            {word:"鸟", choices:["鸟","鱼","牛"], answer:"鸟"},
+            {word:"鱼", choices:["鸟","鱼","牛"], answer:"鱼"},
+            {word:"牛", choices:["鸟","鱼","牛"], answer:"牛"}
+        ]
+    }
+];
+
+let currentLevel = 0;
+let currentQuestion = 0;
+let score = 0;
+
+function showQuestion() {
+    const q = levels[currentLevel].questions[currentQuestion];
+    document.getElementById("question").innerHTML = `<h2>${q.word}</h2><button class="button" onclick="playSound('${q.word}')">🔊 发音</button>`;
+    
+    let optionsHTML = "";
+    q.choices.forEach(choice => {
+        optionsHTML += `<button class="button" onclick="checkAnswer('${choice}')">${choice}</button>`;
+    });
+    document.getElementById("options").innerHTML = optionsHTML;
+}
+
+function playSound(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "zh-CN";
+    speechSynthesis.speak(utterance);
+}
+
+function checkAnswer(choice) {
+    const q = levels[currentLevel].questions[currentQuestion];
+    if(choice === q.answer) {
+        document.getElementById("result").innerText = "✅ 正确！";
+        score++;
+    } else {
+        document.getElementById("result").innerText = "❌ 错误，再试试！";
+    }
+
+    currentQuestion++;
+    if(currentQuestion < levels[currentLevel].questions.length){
+        setTimeout(()=>{ showQuestion(); document.getElementById("result").innerText=""; }, 1000);
+    } else {
+        // 本关结束
+        if(currentLevel + 1 < levels.length){
+            currentLevel++;
+            currentQuestion=0;
+            document.getElementById("result").innerText=`🎉 本关完成！当前分数: ${score}`;
+            setTimeout(()=>{ showQuestion(); document.getElementById("result").innerText=""; }, 2000);
+        } else {
+            document.getElementById("result").innerText=`🏆 游戏结束！总分: ${score}`;
+            document.getElementById("options").innerHTML="";
+            document.getElementById("question").innerHTML="";
+        }
+    }
+}
+
+// 初始化第一题
+showQuestion();
+</script>
+
+</body>
+</html>
