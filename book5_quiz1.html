@@ -48,11 +48,7 @@ h1 { color: #ff6f61; margin-bottom: 20px; }
 
 <h1>中文闯关测验 🎮</h1>
 
-<!-- 顶部导航 -->
-<div style="margin-bottom: 30px;">
-    <a href="book5_lesson1.html" class="icon-button">📚 去学习</a>
-    <a href="book5_game1.html" class="icon-button">🕹️ 去玩儿小游戏</a>
-</div>
+
 
 <!-- 问题区（只显示发音按钮） -->
 <div id="question"></div>
@@ -65,6 +61,13 @@ h1 { color: #ff6f61; margin-bottom: 20px; }
 
 <!-- 当前分数 -->
 <div id="score"></div>
+
+<!-- 再玩儿一次>
+<h2>
+    <a href="book5_lesson1.html" class="icon-button"><div id="again"></div></a>
+</h2>
+<a href="book5_lesson1.html" class="icon-button">📚 去学习</a>
+<a href="book5_game1.html" class="icon-button">🕹️ 去玩儿小游戏</a>
 
 <script>
 // 闯关关卡数据
@@ -150,6 +153,7 @@ function checkAnswer(choice) {
                     showQuestion();
                 } else {
                     document.getElementById("result").innerText = `🏆 游戏结束！总分: ${score}`;
+                    document.getElementById("again").innerText = `🏆 再玩儿一次！`;
                     document.getElementById("options").innerHTML="";
                     document.getElementById("question").innerHTML="";
                 }
