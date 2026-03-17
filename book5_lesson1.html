@@ -142,17 +142,16 @@ h1 {
 <a href="book5_quiz1.html">🏆 去闯关</a>
 <script>
 function speak(el) {
-    const text = el.querySelector(".chinese").innerText;
+    // 获取拼音
+    let pinyin = el.querySelector('.pinyin').innerText.trim();
 
-    // 中文发音
-    const utterance = new SpeechSynthesisUtterance(text);
+    // 取消上一个朗读
+    speechSynthesis.cancel();
+
+    // 播放拼音
+    const utterance = new SpeechSynthesisUtterance(pinyin);
     utterance.lang = "zh-CN";
-
     speechSynthesis.speak(utterance);
-
-    // 显示/隐藏意思
-    const meaning = el.querySelector(".meaning");
-    meaning.style.display = (meaning.style.display === "block") ? "none" : "block";
 }
 </script>
 
