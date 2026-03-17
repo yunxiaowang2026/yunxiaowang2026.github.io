@@ -62,6 +62,9 @@ h1 { color: #ff6f61; margin-bottom: 20px; }
 <!-- 当前分数 -->
 <div id="score"></div>
 <br><br><br><br><br><br>
+<!-- 祝贺 -->
+<div id="congratulations"></div>
+<br><br><br><br><br><br>
 <!-- 再玩儿一次-->
 <a href="book5_quiz1.html" class="icon-button" id="again"></a>
 <br><br><br><br><br><br>
@@ -164,6 +167,7 @@ function checkAnswer(choice) {
                 showQuestion();
             } else {
                 document.getElementById("result").innerText = `🏆 游戏结束！总分: ${score}`;
+                document.getElementById("congratulations").innerText = "Wow! 你好棒，你学会了本课所有的生字！"
                 document.getElementById("again").innerText = "🏆 再玩儿一次！";
                 document.getElementById("options").innerHTML="";
                 document.getElementById("question").innerHTML="";
