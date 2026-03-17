@@ -94,7 +94,9 @@ let doneWords = []; // 本关已答对的字
 
 // 显示题目
 function showQuestion() {
-    const q = levels[currentLevel].questions[currentQuestion];
+    const qList = levels[currentLevel].questions;
+    currentQuestion = Math.floor(Math.random() * qList.length);
+    const q = qList[currentQuestion];
     
     // 问题区只显示发音按钮
     document.getElementById("question").innerHTML = `
@@ -173,11 +175,7 @@ function checkAnswer(choice) {
 }
 
 // 初始化
-showQuestion{
-    const qList = levels[currentLevel].questions;
-    currentQuestion = Math.floor(Math.random() * qList.length);
-    const q = qList[currentQuestion];
-};
+showQuestion();
 </script>
 
 </body>
