@@ -48,7 +48,7 @@ let score = 0;
 
 function showQuestion() {
     const q = levels[currentLevel].questions[currentQuestion];
-    document.getElementById("question").innerHTML = `<h2>${q.word}</h2><button class="button" onclick="playSound('${q.word}')">🔊 发音</button>`;
+    document.getElementById("question").innerHTML = `<button class="button" onclick="playSound('${q.word}')">🔊 发音</button>`;
     
     let optionsHTML = "";
     q.choices.forEach(choice => {
