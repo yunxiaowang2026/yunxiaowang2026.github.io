@@ -91,6 +91,7 @@ let currentLevel = 0;
 let currentQ = null;
 let score = 0;
 let doneWords = []; // 本关已答对的字
+let timer = null;
 document.body.addEventListener('click', function unlockAudio() {
     const u = new SpeechSynthesisUtterance('');
     speechSynthesis.speak(u);
@@ -122,13 +123,12 @@ function showQuestion() {
 
 // 发音
 function playSound(text) {
+    clearTimeout(timer); // ❗防止突然跳题
+
     speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "zh-CN";
-
-    setTimeout(() => {
-        speechSynthesis.speak(utterance);
-    }, 50);
+    speechSynthesis.speak(utterance);
 }
 
     
@@ -154,10 +154,11 @@ function checkAnswer(choice) {
     // 检查是否完成本关
     if(doneWords.length === levels[currentLevel].questions.length){
         document.getElementById("result").innerText = `🎉 本关完成！当前分数: ${score}`;
-        setTimeout(()=>{
+        clearTimeout(timer);
+        timer = setTimeout(()=>{
             doneWords = [];
             currentLevel++;
-
+        
             if(currentLevel < levels.length){
                 showQuestion();
             } else {
@@ -168,14 +169,16 @@ function checkAnswer(choice) {
             }
         }, 2000);
         return;
-    }
+    }  
 
-    setTimeout(()=>{ showQuestion(); }, 1000);
+   clearTimeout(timer);
+   timer = setTimeout(()=>{ showQuestion(); }, 1000);
 }
 
 
 // 初始化
-showQuestion();
+function showQuestion() {
+    clearTimeout(timer); // ❗清掉所有旧任务
 </script>
 
 </body>
