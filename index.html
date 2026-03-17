@@ -1,40 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 
 <head>
-<title>Yunxiao Wang</title>
+    <meta charset="UTF-8">
+    <title>学中文小课堂</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background-color: #fffbec;
+            text-align: center;
+            padding: 50px;
+        }
 
-<style>
+        h1 {
+            color: #ff6f61;
+        }
 
-body {
-    font-family: Arial;
-    text-align: center;
-    margin-top: 100px;
-    background-color: #f4f4f4;
-}
+        .word {
+            display: inline-block;
+            margin: 20px;
+            padding: 20px;
+            border: 3px solid #ffcc00;
+            border-radius: 10px;
+            background-color: #fff9d8;
+            cursor: pointer;
+            width: 150px;
+        }
 
-h1 {
-    color: #2c3e50;
-}
+        .pinyin {
+            color: #2a7ae2;
+            font-size: 20px;
+            margin-top: 10px;
+        }
 
-p {
-    font-size: 18px;
-}
-
-</style>
-
+        .meaning {
+            color: #27ae60;
+            font-size: 18px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
 
-<h1>Hello, I'm Yunxiao Wang</h1>
+<h1>学中文小课堂 🌟</h1>
 
-<p>QA Manager → Product Owner</p>
+<div class="word" onclick="showMeaning(this)">
+    <div class="chinese">猫</div>
+    <div class="pinyin">māo</div>
+    <div class="meaning">Cat</div>
+</div>
 
-<p>Welcome to my personal website.</p>
+<div class="word" onclick="showMeaning(this)">
+    <div class="chinese">狗</div>
+    <div class="pinyin">gǒu</div>
+    <div class="meaning">Dog</div>
+</div>
 
-<p>Currently learning GitHub and Web Development.</p>
+<div class="word" onclick="showMeaning(this)">
+    <div class="chinese">苹果</div>
+    <div class="pinyin">píngguǒ</div>
+    <div class="meaning">Apple</div>
+</div>
+
+<script>
+function showMeaning(el) {
+    const meaning = el.querySelector(".meaning");
+    if (meaning.style.display === "none") {
+        meaning.style.display = "block";
+    } else {
+        meaning.style.display = "none";
+    }
+}
+</script>
 
 </body>
-
 </html>
