@@ -104,7 +104,8 @@ document.body.addEventListener('click', function unlockAudio() {
 function showQuestion() {
     const qList = levels[currentLevel].questions;
     currentQ = qList[Math.floor(Math.random() * qList.length)];
-
+    
+    clearTimeout(timer); // ❗清掉所有旧任务
     speechSynthesis.cancel();
 
     document.getElementById("question").innerHTML = `
@@ -177,9 +178,7 @@ function checkAnswer(choice) {
 
 
 // 初始化
-function showQuestion() {
-    clearTimeout(timer); // ❗清掉所有旧任务
-}
+showQuestion(); 
 
 </script>
 
