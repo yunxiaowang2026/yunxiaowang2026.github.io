@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>中文闯关测验 🎮</title>
-
 <style>
 body {
     font-family: "Microsoft YaHei", Arial;
@@ -12,12 +11,7 @@ body {
     background-color: #fffbe6;
     transition: 0.3s;
 }
-
-h1 {
-    color: #ff6f61;
-}
-
-/* 按钮 */
+h1 { color: #ff6f61; }
 .button, .icon-button {
     display: inline-block;
     font-size: 30px;
@@ -29,23 +23,11 @@ h1 {
     cursor: pointer;
     text-decoration: none;
 }
-
-.button:hover, .icon-button:hover {
-    background-color: #ffb347;
-}
-
-#result {
-    font-size: 28px;
-    margin-top: 20px;
-    height: 40px;
-}
-
-#score {
-    font-size: 22px;
-}
+.button:hover, .icon-button:hover { background-color: #ffb347; }
+#result { font-size: 28px; margin-top: 20px; height: 40px; }
+#score { font-size: 22px; }
 </style>
 </head>
-
 <body>
 
 <h1>中文闯关测验 🎮</h1>
@@ -56,202 +38,129 @@ h1 {
 <div id="score"></div>
 
 <br><br>
-
 <div id="congratulations" class="icon-button"></div>
 <br><br>
-
 <a href="book5_quiz1.html" class="icon-button" id="again"></a>
 <br><br>
-
 <a href="book5_lesson1.html">📚 去学习</a>
 <a href="book5_game1.html">🕹️ 去玩儿小游戏</a>
 
 <script>
-
-// 数据
+// 关卡数据（可为多音字指定 sound）
 let levels = [
-{
-    questions: [
-        {word:"超", choices:["超","市","颜"], answer:"超"},
-        {word:"市", choices:["市","超","练"], answer:"市"},
-        {word:"各", choices:["各","许","品"], answer:"各"},
-        {word:"颜", choices:["颜","漂","行"], answer:"颜"},
-        {word:"练", choices:["练","尺","支"], answer:"练"},
-    ]
-},
-{
-    questions: [
-        {word:"许", choices:["许","同","准"], answer:"许"},
-        {word:"尺", choices:["尺","米","寸"], answer:"尺"},
-        {word:"支", choices:["支","枝","笔"], answer:"支"},
-        {word:"行", choices:["行","商","超"], answer:"行", sound:"xíng"},
-        {word:"漂", choices:["漂","颜","行"], answer:"漂", sound:"piào"},
-    ]
-},
-        {word:"商", choices:["商","店","买"], answer:"商"},
-        {word:"鞋", choices:["鞋","靴","袜"], answer:"鞋"},
-        {word:"品", choices:["品","货","物"], answer:"品"},
-        {word:"制", choices:["制","做","作"], answer:"制"},
-        {word:"漂", choices:["漂","白","净"], answer:"漂"} 
+    {
+        questions: [
+            {word:"超", choices:["超","市","颜"], answer:"超"},
+            {word:"市", choices:["市","超","练"], answer:"市"},
+            {word:"各", choices:["各","许","品"], answer:"各"},
+            {word:"颜", choices:["颜","漂","行"], answer:"颜"},
+            {word:"练", choices:["练","尺","支"], answer:"练"}
+        ]
+    },
+    {
+        questions: [
+            {word:"许", choices:["许","同","准"], answer:"许"},
+            {word:"尺", choices:["尺","米","寸"], answer:"尺"},
+            {word:"支", choices:["支","枝","笔"], answer:"支"},
+            {word:"行", choices:["行","商","超"], answer:"行", sound:"xíng"},
+            {word:"漂", choices:["漂","颜","行"], answer:"漂", sound:"piào"}
+        ]
+    },
+    {
+        questions: [
+            {word:"商", choices:["商","店","买"], answer:"商"},
+            {word:"鞋", choices:["鞋","靴","袜"], answer:"鞋"},
+            {word:"品", choices:["品","货","物"], answer:"品"},
+            {word:"制", choices:["制","做","作"], answer:"制"}
+        ]
+    }
 ];
 
 let currentLevel = 0;
+let remainingQuestions = []; // 本关剩余题
 let currentQ = null;
 let score = 0;
-let doneWords = [];
-let timer = null;
 
-let speaking = false;
-let correctCount = 0;
-let totalCount = 0;
-    
-speechSynthesis.onvoiceschanged = () => {
-    console.log("语音加载完成");
-};
-
-// 解锁语音（关键）
+// 解锁语音
 document.body.addEventListener('click', function unlockAudio() {
-    const u = new SpeechSynthesisUtterance('');
-    speechSynthesis.speak(u);
+    speechSynthesis.speak(new SpeechSynthesisUtterance(''));
     speechSynthesis.cancel();
     document.body.removeEventListener('click', unlockAudio);
 });
 
 // 出题
 function showQuestion() {
-    clearTimeout(timer);
-    speechSynthesis.cancel();
-
-    const qList = levels[currentLevel].questions;
-    currentQ = qList[Math.floor(Math.random() * qList.length)];
-
-    document.getElementById("question").innerHTML =
-        `<button class="button" onclick="playSound('${currentQ.word}')">🔊 发音</button>`;
-
-    let html = "";
-    currentQ.choices.forEach(choice => {
-        html += `<button class="button" onclick="checkAnswer('${choice}')">${choice}</button>`;
-    });
-
-    document.getElementById("options").innerHTML = html;
-
-    document.getElementById("result").innerText =
-        `第 ${doneWords.length + 1} / ${qList.length} 个字`;
-
-    document.getElementById("score").innerText = "分数: " + score;
-
-    // 自动读
-    setTimeout(() => {
-        playSound(currentQ.word);
-    }, 300);
-}
-
-// 发音（稳定版）
-function playSound(text) {
-    if (speaking) return;
-
-    clearTimeout(timer);
-    speechSynthesis.cancel();
-
-    // ⭐ 获取所有语音
-    let voices = speechSynthesis.getVoices();
-
-    // ⭐ 找中文语音（关键！！！）
-    let zhVoice = voices.find(v => v.lang === "zh-CN") 
-                || voices.find(v => v.lang.includes("zh"));
-
-    const utterance = new SpeechSynthesisUtterance(text);
-
-    if (zhVoice) {
-        utterance.voice = zhVoice;
+    if(remainingQuestions.length === 0){
+        // 本关完成
+        document.getElementById("result").innerText = `🎉 本关完成！当前分数: ${score}`;
+        setTimeout(() => {
+            currentLevel++;
+            if(currentLevel < levels.length){
+                startLevel();
+            } else {
+                document.getElementById("result").innerText = `🏆 游戏结束！总分: ${score}`;
+                document.getElementById("congratulations").innerText = "🌟 太棒了！你学会了所有生字！";
+                document.getElementById("options").innerHTML = "";
+                document.getElementById("question").innerHTML = "";
+                document.getElementById("again").innerText = "🔁 再玩一次";
+            }
+        }, 2000);
+        return;
     }
 
+    // 从剩余题中随机取
+    let index = Math.floor(Math.random() * remainingQuestions.length);
+    currentQ = remainingQuestions[index];
+
+    document.getElementById("question").innerHTML =
+        `<button class="button" onclick="playSound('${currentQ.sound||currentQ.word}')">🔊 发音</button>`;
+
+    let html = "";
+    currentQ.choices.forEach(c => {
+        html += `<button class="button" onclick="checkAnswer('${c}')">${c}</button>`;
+    });
+    document.getElementById("options").innerHTML = html;
+
+    document.getElementById("score").innerText = `分数: ${score}`;
+
+    // 自动朗读
+    setTimeout(() => playSound(currentQ.sound||currentQ.word), 300);
+}
+
+// 发音（稍慢）
+function playSound(text){
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "zh-CN";
-
-    speaking = true;
-    utterance.onend = () => speaking = false;
-
+    utterance.rate = 0.6; // 略慢
+    let voices = speechSynthesis.getVoices();
+    let zhVoice = voices.find(v=>v.lang==="zh-CN") || voices.find(v=>v.lang.includes("zh"));
+    if(zhVoice) utterance.voice = zhVoice;
     speechSynthesis.speak(utterance);
 }
 
-// 判断
-function checkAnswer(choice) {
-    choice = choice.trim();
-    let answer = currentQ.answer.trim();
-
-    totalCount++;
-
-    if (choice === answer) {
-        document.getElementById("result").innerText = "🎉 太棒了！";
-        correctCount++;
+// 判断答案
+function checkAnswer(choice){
+    if(choice === currentQ.answer){
         score++;
-
-        document.body.style.backgroundColor = "#d4edda";
-        setTimeout(() => {
-            document.body.style.backgroundColor = "#fffbe6";
-        }, 300);
-
-        if (!doneWords.includes(currentQ.word)) {
-            doneWords.push(currentQ.word);
-        }
-
+        // 从剩余题中移除
+        remainingQuestions = remainingQuestions.filter(q=>q!==currentQ);
+        showQuestion();
     } else {
         document.getElementById("result").innerText = "❌ 再想一想";
-
-        setTimeout(() => {
-            playSound(currentQ.word);
-        }, 500);
-
-        return;
+        setTimeout(()=>playSound(currentQ.sound||currentQ.word),500);
     }
+}
 
-    // 完成一关
-    if (doneWords.length === levels[currentLevel].questions.length) {
-
-        let stars = "⭐";
-        if (correctCount / totalCount > 0.8) stars = "⭐⭐⭐";
-        else if (correctCount / totalCount > 0.5) stars = "⭐⭐";
-
-        document.getElementById("result").innerText =
-            `🎉 本关完成！${stars}`;
-
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-
-            doneWords = [];
-            correctCount = 0;
-            totalCount = 0;
-            currentLevel++;
-
-            if (currentLevel < levels.length) {
-                showQuestion();
-            } else {
-                document.getElementById("result").innerText =
-                    "🏆 全部完成！";
-
-                document.getElementById("congratulations").innerText =
-                    "🌟 太棒了！你学会了所有生字！";
-
-                document.getElementById("again").innerText =
-                    "🔁 再玩一次";
-
-                document.getElementById("options").innerHTML = "";
-                document.getElementById("question").innerHTML = "";
-            }
-
-        }, 2000);
-
-        return;
-    }
-
-    clearTimeout(timer);
-    timer = setTimeout(() => showQuestion(), 1000);
+// 开始本关
+function startLevel(){
+    remainingQuestions = [...levels[currentLevel].questions];
+    showQuestion();
 }
 
 // 初始化
-showQuestion();
+startLevel();
 
 </script>
-
 </body>
 </html>
