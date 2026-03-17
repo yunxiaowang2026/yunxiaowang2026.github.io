@@ -2,92 +2,91 @@
 <html lang="zh">
 
 <head>
-    <meta charset="UTF-8">
-    <title>学中文小课堂 🎵</title>
-    <style>
-        body {
-            font-family: "Microsoft YaHei", Arial, sans-serif;
-            background-color: #fffbec;
-            text-align: center;
-            padding: 50px;
-        }
+<meta charset="UTF-8">
+<title>学中文小课堂 🎵</title>
 
-        h1 {
-            color: #ff6f61;
-        }
+<style>
+body {
+    font-family: "Microsoft YaHei", Arial;
+    background-color: #fffbec;
+    text-align: center;
+    padding: 50px;
+}
 
-        .word {
-            display: inline-block;
-            margin: 20px;
-            padding: 20px;
-            border: 3px solid #ffcc00;
-            border-radius: 10px;
-            background-color: #fff9d8;
-            cursor: pointer;
-            width: 150px;
-        }
+h1 {
+    color: #ff6f61;
+}
 
-        .chinese {
-            font-size: 40px;
-            color: #ff6f61;
-        }
+.word {
+    display: inline-block;
+    margin: 20px;
+    padding: 20px;
+    border: 3px solid #ffcc00;
+    border-radius: 10px;
+    background-color: #fff9d8;
+    cursor: pointer;
+    width: 150px;
+}
 
-        .pinyin {
-            color: #2a7ae2;
-            font-size: 20px;
-            margin-top: 10px;
-        }
+.chinese {
+    font-size: 40px;
+    color: #ff6f61;
+}
 
-        .meaning {
-            color: #27ae60;
-            font-size: 18px;
-            margin-top: 10px;
-            display: none;
-        }
-    </style>
+.pinyin {
+    color: #2a7ae2;
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+.meaning {
+    color: #27ae60;
+    font-size: 18px;
+    margin-top: 10px;
+    display: none;
+}
+</style>
+
 </head>
 
 <body>
 
 <h1>学中文小课堂 🎵</h1>
 
-<div class="word" onclick="playSound(this)">
+<div class="word" onclick="speak(this)">
     <div class="chinese">猫</div>
     <div class="pinyin">māo</div>
     <div class="meaning">Cat</div>
-    <audio src="https://ssl.gstatic.com/dictionary/static/sounds/oxford/cat--_gb_1.mp3"></audio>
 </div>
 
-<div class="word" onclick="playSound(this)">
+<div class="word" onclick="speak(this)">
     <div class="chinese">狗</div>
     <div class="pinyin">gǒu</div>
     <div class="meaning">Dog</div>
-    <audio src="https://ssl.gstatic.com/dictionary/static/sounds/oxford/dog--_gb_1.mp3"></audio>
 </div>
 
-<div class="word" onclick="playSound(this)">
+<div class="word" onclick="speak(this)">
     <div class="chinese">苹果</div>
     <div class="pinyin">píngguǒ</div>
     <div class="meaning">Apple</div>
-    <audio src="https://ssl.gstatic.com/dictionary/static/sounds/oxford/apple--_gb_1.mp3"></audio>
 </div>
 
 <script>
-function playSound(el) {
-    // 播放音频
-    const audio = el.querySelector("audio");
-    if (audio) {
-        audio.play();
-    }
-    // 显示或隐藏意思
+function speak(el) {
+    const text = el.querySelector(".chinese").innerText;
+
+    // 中文发音
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "zh-CN";
+
+    speechSynthesis.speak(utterance);
+
+    // 显示/隐藏意思
     const meaning = el.querySelector(".meaning");
-    if (meaning.style.display === "none") {
-        meaning.style.display = "block";
-    } else {
-        meaning.style.display = "none";
-    }
+    meaning.style.display = (meaning.style.display === "block") ? "none" : "block";
 }
 </script>
 
 </body>
+
 </html>
