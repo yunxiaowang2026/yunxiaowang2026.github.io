@@ -63,22 +63,24 @@ h1 {
 
 <h1>学中文小课堂 🎵</h1>
 
-<div class="word" onclick="speak(this)">
-    <div class="chinese">猫</div>
+<div class="word" onclick="speak(this)">    
     <div class="pinyin">māo</div>
+    <div class="chinese">猫</div>
 </div>
 
 <div class="word" onclick="speak(this)">
-    <div class="chinese">狗</div>
     <div class="pinyin">gǒu</div>
+    <div class="chinese">狗</div>
 </div>
 
 <div class="word" onclick="speak(this)">
-    <div class="chinese">苹果</div>
     <div class="pinyin">píngguǒ</div>
+    <div class="chinese">苹果</div>
+    
 </div>
 <br><br>
-<a href="game.html">🎮 去玩小游戏</a>
+<a href="book5_game1.html">🎮 去玩小游戏</a>
+<a href="book5_quiz1.html">🎮 去闯关</a>
 <script>
 function speak(el) {
     const text = el.querySelector(".chinese").innerText;
