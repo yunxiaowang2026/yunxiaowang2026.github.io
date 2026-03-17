@@ -3,186 +3,231 @@
 <head>
 <meta charset="UTF-8">
 <title>中文闯关测验 🎮</title>
+
 <style>
 body {
     font-family: "Microsoft YaHei", Arial;
     text-align: center;
     padding: 40px;
     background-color: #fffbe6;
+    transition: 0.3s;
 }
-h1 { color: #ff6f61; margin-bottom: 20px; }
 
-/* 顶部导航 */
-.icon-button {
+h1 {
+    color: #ff6f61;
+}
+
+/* 按钮 */
+.button, .icon-button {
     display: inline-block;
-    font-size: 36px;
+    font-size: 30px;
     padding: 15px 25px;
-    margin: 0 20px;
-    background-color: #ffcc00;
-    color: black;
-    text-decoration: none;
-    border-radius: 15px;
-}
-.icon-button:hover { background-color: #ffb347; }
-
-/* 答案按钮 */
-.button {
-    display: inline-block;
-    font-size: 36px;
-    padding: 15px 30px;
     margin: 15px;
-    cursor: pointer;
     border-radius: 15px;
     background-color: #ffcc00;
     color: black;
+    cursor: pointer;
+    text-decoration: none;
 }
-.button:hover { background-color: #ffb347; }
 
-/* 结果提示 */
-#result { font-size: 28px; margin-top: 20px; height: 40px; }
-/* 分数显示 */
-#score { font-size: 24px; margin-top: 10px; }
+.button:hover, .icon-button:hover {
+    background-color: #ffb347;
+}
+
+#result {
+    font-size: 28px;
+    margin-top: 20px;
+    height: 40px;
+}
+
+#score {
+    font-size: 22px;
+}
 </style>
 </head>
+
 <body>
 
 <h1>中文闯关测验 🎮</h1>
 
-
-
-<!-- 问题区（只显示发音按钮） -->
 <div id="question"></div>
-
-<!-- 答案选项 -->
 <div id="options"></div>
-
-<!-- 答题结果 -->
 <div id="result"></div>
-
-<!-- 当前分数 -->
 <div id="score"></div>
-<br><br><br><br><br><br>
-<!-- 祝贺 -->
-<div id="congratulations" class="icon-button" ></div>
-<br><br><br><br><br><br>
-<!-- 再玩儿一次-->
-<a href="book5_quiz1.html" class="icon-button" id="again"></a>
-<br><br><br><br><br><br>
-<a href="book5_lesson1.html" >📚 去学习</a>
-<a href="book5_game1.html" >🕹️ 去玩儿小游戏</a>
+
+<br><br>
+
+<div id="congratulations" class="icon-button"></div>
+<br><br>
+
+<a href="quiz.html" class="icon-button" id="again"></a>
+<br><br>
+
+<a href="book5_lesson1.html">📚 去学习</a>
+<a href="book5_game1.html">🕹️ 去玩儿小游戏</a>
 
 <script>
-// 闯关关卡数据
+
+// 数据
 let levels = [
-    { // 第一关
-        questions: [
-            {word:"猫", choices:["猫","狗","苹果"], answer:"猫"},
-            {word:"狗", choices:["猫","狗","苹果"], answer:"狗"},
-            {word:"苹果", choices:["猫","狗","苹果"], answer:"苹果"}
-        ]
-    },
-    { // 第二关
-        questions: [
-            {word:"鸟", choices:["鸟","鱼","牛"], answer:"鸟"},
-            {word:"鱼", choices:["鸟","鱼","牛"], answer:"鱼"},
-            {word:"牛", choices:["鸟","鱼","牛"], answer:"牛"}
-        ]
-    }
+{
+    questions: [
+        {word:"猫", choices:["猫","狗","苹果"], answer:"猫"},
+        {word:"狗", choices:["猫","狗","苹果"], answer:"狗"},
+        {word:"苹果", choices:["猫","狗","苹果"], answer:"苹果"}
+    ]
+},
+{
+    questions: [
+        {word:"鸟", choices:["鸟","鱼","牛"], answer:"鸟"},
+        {word:"鱼", choices:["鸟","鱼","牛"], answer:"鱼"},
+        {word:"牛", choices:["鸟","鱼","牛"], answer:"牛"}
+    ]
+}
 ];
 
 let currentLevel = 0;
 let currentQ = null;
 let score = 0;
-let doneWords = []; // 本关已答对的字
+let doneWords = [];
 let timer = null;
+
+let speaking = false;
+let correctCount = 0;
+let totalCount = 0;
+
+// 解锁语音（关键）
 document.body.addEventListener('click', function unlockAudio() {
     const u = new SpeechSynthesisUtterance('');
     speechSynthesis.speak(u);
     speechSynthesis.cancel();
-
     document.body.removeEventListener('click', unlockAudio);
 });
 
-// 显示题目
+// 出题
 function showQuestion() {
+    clearTimeout(timer);
+    speechSynthesis.cancel();
+
     const qList = levels[currentLevel].questions;
     currentQ = qList[Math.floor(Math.random() * qList.length)];
-    
-    clearTimeout(timer); // ❗清掉所有旧任务
-    speechSynthesis.cancel();
 
-    document.getElementById("question").innerHTML = `
-        <button class="button" onclick="playSound('${currentQ.word}')">🔊 发音</button>
-    `;
+    document.getElementById("question").innerHTML =
+        `<button class="button" onclick="playSound('${currentQ.word}')">🔊 发音</button>`;
 
-    let optionsHTML = "";
+    let html = "";
     currentQ.choices.forEach(choice => {
-        optionsHTML += `<button class="button" onclick="checkAnswer('${choice}')">${choice}</button>`;
+        html += `<button class="button" onclick="checkAnswer('${choice}')">${choice}</button>`;
     });
 
-    document.getElementById("options").innerHTML = optionsHTML;
-    document.getElementById("result").innerText = "";
+    document.getElementById("options").innerHTML = html;
+
+    document.getElementById("result").innerText =
+        `第 ${doneWords.length + 1} / ${qList.length} 个字`;
+
     document.getElementById("score").innerText = "分数: " + score;
+
+    // 自动读
+    setTimeout(() => {
+        playSound(currentQ.word);
+    }, 300);
 }
 
-// 发音
+// 发音（稳定版）
 function playSound(text) {
-    clearTimeout(timer); // ❗防止突然跳题
+    if (speaking) return;
 
+    clearTimeout(timer);
     speechSynthesis.cancel();
+
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "zh-CN";
-    speechSynthesis.speak(utterance);
+
+    speaking = true;
+
+    utterance.onend = () => speaking = false;
+
+    setTimeout(() => {
+        speechSynthesis.speak(utterance);
+    }, 100);
 }
 
-    
-// 检查答案
-
+// 判断
 function checkAnswer(choice) {
     choice = choice.trim();
     let answer = currentQ.answer.trim();
 
-    if(choice === answer){
-        document.getElementById("result").innerText = "✅ 正确！";
+    totalCount++;
+
+    if (choice === answer) {
+        document.getElementById("result").innerText = "🎉 太棒了！";
+        correctCount++;
         score++;
 
-        if(!doneWords.includes(currentQ.word)){
+        document.body.style.backgroundColor = "#d4edda";
+        setTimeout(() => {
+            document.body.style.backgroundColor = "#fffbe6";
+        }, 300);
+
+        if (!doneWords.includes(currentQ.word)) {
             doneWords.push(currentQ.word);
         }
 
     } else {
-        document.getElementById("result").innerText = "❌ 错误，再试试！";
+        document.getElementById("result").innerText = "❌ 再想一想";
+
+        setTimeout(() => {
+            playSound(currentQ.word);
+        }, 500);
+
         return;
     }
 
-    // 检查是否完成本关
-    if(doneWords.length === levels[currentLevel].questions.length){
-        document.getElementById("result").innerText = `🎉 本关完成！当前分数: ${score}`;
+    // 完成一关
+    if (doneWords.length === levels[currentLevel].questions.length) {
+
+        let stars = "⭐";
+        if (correctCount / totalCount > 0.8) stars = "⭐⭐⭐";
+        else if (correctCount / totalCount > 0.5) stars = "⭐⭐";
+
+        document.getElementById("result").innerText =
+            `🎉 本关完成！${stars}`;
+
         clearTimeout(timer);
-        timer = setTimeout(()=>{
+        timer = setTimeout(() => {
+
             doneWords = [];
+            correctCount = 0;
+            totalCount = 0;
             currentLevel++;
-        
-            if(currentLevel < levels.length){
+
+            if (currentLevel < levels.length) {
                 showQuestion();
             } else {
-                document.getElementById("result").innerText = `🏆 游戏结束！总分: ${score}`;
-                document.getElementById("congratulations").innerText = "Wow! 你好棒，你学会了本课所有的生字！"
-                document.getElementById("again").innerText = "🏆 再玩儿一次！";
-                document.getElementById("options").innerHTML="";
-                document.getElementById("question").innerHTML="";
-            }
-        }, 2000);
-        return;
-    }  
+                document.getElementById("result").innerText =
+                    "🏆 全部完成！";
 
-   clearTimeout(timer);
-   timer = setTimeout(()=>{ showQuestion(); }, 1000);
+                document.getElementById("congratulations").innerText =
+                    "🌟 太棒了！你学会了所有生字！";
+
+                document.getElementById("again").innerText =
+                    "🔁 再玩一次";
+
+                document.getElementById("options").innerHTML = "";
+                document.getElementById("question").innerHTML = "";
+            }
+
+        }, 2000);
+
+        return;
+    }
+
+    clearTimeout(timer);
+    timer = setTimeout(() => showQuestion(), 1000);
 }
 
-
 // 初始化
-showQuestion(); 
+showQuestion();
 
 </script>
 
